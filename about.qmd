@@ -1,0 +1,30 @@
+---
+title: "About"
+about:
+  template: jolla
+  image: mountains.png
+  links: 
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/zoe-bourne/
+    - icon: instagram
+      text: Instagram
+      href: https://github.com
+    - icon: github
+      text: Github
+      href: https://github.com
+---
+
+Hi, my name is Zoe Bourne and I am a senior at George Washington University studying marketing analytics and journalism.
+
+### Education
+
+George Washington University
+
+### Work Experience
+Project Manager - MZZ Ventures
+
+## Skillsets
+
+```{r}
+```

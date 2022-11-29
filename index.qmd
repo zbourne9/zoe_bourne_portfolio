@@ -1,0 +1,30 @@
+---
+title: "Zoe Bourne Portfolio"
+about:
+  template: solana
+  image: DSC02252-2.jpg
+  links: 
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/zoe-bourne/
+    - icon: instagram
+      text: Instagram
+      href: https://github.com
+    - icon: github
+      text: Github
+      href: https://github.com
+---
+
+Hi, my name is Zoe Bourne and I am a senior at George Washington University.
+
+### Education
+
+George Washington University
+
+### Work Experience
+
+### Skill Sets
+
+```{r}
+
+```
