@@ -6,7 +6,7 @@ about:
   links: 
     - icon: linkedin
       text: LinkedIn
-      href: https://www.linkedin.com/in/zoe-bourne/
+      href: https://www.linkedin.com/in/zoe-bourne
     - icon: instagram
       text: Instagram
       href: https://github.com
@@ -24,6 +24,7 @@ George Washington University
 ### Work Experience
 
 ### Skill Sets
+
 
 ```{r}
 
