@@ -4,6 +4,27 @@
     "href": "portfolio.html",
     "title": "Portfolio",
     "section": "",
-    "text": "library(tidyverse)\n\n── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──\n✔ ggplot2 3.3.6      ✔ purrr   0.3.4 \n✔ tibble  3.1.8      ✔ dplyr   1.0.10\n✔ tidyr   1.2.1      ✔ stringr 1.4.1 \n✔ readr   2.1.3      ✔ forcats 0.5.2 \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\n\nlibrary(rvest)\n\n\nAttaching package: 'rvest'\n\nThe following object is masked from 'package:readr':\n\n    guess_encoding\n\nlibrary(stringr)\n\n\n\nhttps://www.dropbox.com/s/xy4zxeyxlis3mdy/D.C.%20Mayoral%20Candidate%2C%20Robert%20White%E2%80%99s%2C%20Criminal%20Justice%20Platform%20.pdf?dl=0"
+    "text": "Written in the end of November, this story highlights key components of Robert White’s Criminal Justice Campaign in his run for mayor.\n\n\n\nReporting on the effect that COVID-19 had on Asian communities and other communities of color in America, this story highlights the under reporting of hate crimes throughout the District of Columbia and the United States as a whole.\n\n\n\nAfter the DOJ was prompted to investigate D.C. Jail Conditions, following the January 6th Capitol Attacks, this story highlights that jails conditions have long been reported by the jails predominately Black population."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Hi, my name is Zoe Bourne and I am a senior at George Washington University studying marketing analytics and journalism."
+  },
+  {
+    "objectID": "about.html#skillsets",
+    "href": "about.html#skillsets",
+    "title": "About",
+    "section": "Skillsets",
+    "text": "Skillsets"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Zoe Bourne Portfolio",
+    "section": "",
+    "text": "Education\nGeorge Washington University\n\n\nWork Experience\n\n\nSkill Sets"
   }
 ]
