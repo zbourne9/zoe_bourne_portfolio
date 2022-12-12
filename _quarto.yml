@@ -10,6 +10,10 @@ website:
         text: Home
       - about.qmd
       - portfolio.qmd
+      - featured_paper.qmd
+      - featured_story.qmd
+      - analysis.qmd
+      
   page-footer: 
     left: "Copyright 2022, Testy R. Testman" 
     right: 
@@ -24,6 +28,3 @@ format:
     theme: cosmo
     css: styles.css
     toc: true
-
-
-

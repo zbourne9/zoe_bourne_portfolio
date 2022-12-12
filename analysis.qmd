@@ -1,0 +1,100 @@
+---
+title: "Analysis Walkthrough"
+editor: visual
+format:
+  html:
+    self-contained: true
+    code-fold: true
+    code-tools: true
+---
+
+# Percentage of the US Population with a Bachelor's Degree and Higher
+
+We'll start with loading our libraries.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tigris)
+library(tidycensus)
+library(tmap)
+library(tmaptools)
+library(janitor)
+library(writexl)
+library(here)
+options(tigris_class = "sf")
+
+```
+
+Below are the census variables use for the data analysis.
+
+```{r}
+myvars <- c(education_total = "B06009_001",
+            education_bachelors = "B06009_005",
+            education_gradprofess = "B06009_006")
+
+```
+
+Using the `get_acs()` function in tidycensus, we will be able to see the previously identified variables on the state-level.
+
+```{r}
+
+education_one <- get_acs(geography = "state",
+  variables = c(myvars),
+  output = "wide",
+  geometry = TRUE
+  )
+
+```
+
+To clean up the data set, I used the `select()` function to remove the three "margin of error" columns.
+
+```{r}
+
+education_two <- education_one %>%
+  select(-ends_with("M"))
+
+names(education_two)
+
+
+```
+
+Using the `mutate()` function, I created a new column that contains the percentage of people with a bachelor's or higher degree for each state.
+
+```{r}
+
+education_two_mutated <- education_two %>%
+  mutate(
+    total_above_bach = education_bachelorsE + education_gradprofessE,
+    pct_edu_above_bach = total_above_bach/education_totalE * 100
+  )
+
+glimpse(education_two_mutated)
+
+```
+
+After removing Alaska, Hawaii, and Puerto Rico, I made a map of the continental U.S. showing the new percentage measure created in the previous code chunk.
+
+```{r}
+
+mutate_edu_two <- subset(education_two_mutated, NAME != "Alaska")
+
+mutate_two_edu_two <- subset(mutate_edu_two, NAME != "Hawaii")
+
+mutate_final_edu_two <- subset(mutate_two_edu_two, NAME != "Puerto Rico")
+
+
+```
+
+Using the tmap() package, I created the final version of the shaded map for the continental U.S. that shows the percentage of Bachelor's-and-higher populations in each state.
+
+```{r}
+
+tmap_mode(mode = "plot")
+
+tm_shape(mutate_final_edu_two) +
+  tm_polygons("pct_edu_above_bach", id = "GEOID")
+
+
+```
