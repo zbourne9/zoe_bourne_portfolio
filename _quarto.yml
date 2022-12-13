@@ -13,7 +13,8 @@ website:
       - href: https://drive.google.com/file/d/1JNHaiyPBPztwITgg5GODKrFhRBGgyUSX/view?usp=sharing
         text: Resume
       - featured_paper.qmd
-      - featured_story.qmd
+      - href: featured_story.qmd
+        text: Featured Story
       - analysis.qmd
       
   page-footer: 
