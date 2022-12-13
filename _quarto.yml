@@ -10,6 +10,8 @@ website:
         text: Home
       - about.qmd
       - portfolio.qmd
+      - href: https://drive.google.com/file/d/1JNHaiyPBPztwITgg5GODKrFhRBGgyUSX/view?usp=sharing
+        text: Resume
       - featured_paper.qmd
       - featured_story.qmd
       - analysis.qmd
