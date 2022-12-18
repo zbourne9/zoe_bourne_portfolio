@@ -9,7 +9,11 @@ format:
     code-tools: true
 ---
 
+#### Overview
+
 Throughout the following page, we will be exploring and analyzing the Virginia election results of Mcauliffe versus Youngkin. We will then be comparing the results of the governors race to the presidential race between Biden and Trump.
+
+#### Code
 
 We will start by loading our libraries
 
@@ -45,10 +49,12 @@ updated_joined_vacomparison <- joined_vacomparison%>%
 mutate(
       #create new column of the difference between democratic candiated, subracting the presidential canidate from the candiate for governor
   compare_dem = pct_mcauliffe - biden_pct,
-        #create new column of the difference between republican candiated, subracting the presidential canidate from the candiate for governor
+      #create new column of the difference between republican candiated, subracting the presidential canidate from the candiate for governor
   compare_rep = pct_youngkin - trump_pct,
-        #create new column of the difference between the two candiated for governor, subracting Youngkin from Mcauliffe
-  compare_gov = pct_mcauliffe - pct_youngkin
+      #create new column of the difference between the two candiated for governor, subracting Youngkin from Mcauliffe
+  compare_gov = pct_mcauliffe - pct_youngkin,
+      #create new column of the difference between the two candiated for presindent, subracting Biden from Trump
+   compare_pres = biden_pct - trump_pct
 )
 
 ```
@@ -81,13 +87,13 @@ select(locality, pct_mcauliffe, pct_youngkin, trump_pct, biden_pct, compare_dem,
                   dom = "tip"))
 ```
 
-#### Table Two - Percents and Comparisons of Virginia Governor Race and Presidential Race 
+#### Table Two - Percents and Comparisons of Virginia Governor Race and Presidential Race
 
 ```{r}
 #the following data for the chart comes from the data set 'updated_joined_vacomparison'
 updated_joined_vacomparison%>%
-#the variables chosen to be highlighted in this table are the following - locality, compare_gov, compare_dem, compare_rep, pct_youngkin, pct_mcauliffe, trump_pct, biden_pct
-select(locality, compare_gov, compare_dem, compare_rep, pct_youngkin, pct_mcauliffe, trump_pct, biden_pct) %>%
+#the variables chosen to be highlighted in this table are the following - locality, compare_pres, compare_gov, compare_dem, compare_rep, pct_youngkin, pct_mcauliffe, trump_pct, biden_pct
+select(locality, compare_pres, compare_gov, compare_dem, compare_rep, pct_youngkin, pct_mcauliffe, trump_pct, biden_pct) %>%
   #we will create a data table
   DT::datatable(
     #rownames false removes the column of row names from the data set
@@ -144,4 +150,90 @@ ggplot(sorted_rep,
   geom_col() +
   # the title of the graph will be the following - Did Youngkin Perform Better Than Trump?
   labs(title = "Did Youngkin Perform Better Than Trump?")
+```
+
+#### Analysis
+
+##### Finding One
+
+Exploring the relationship between the percent of votes received by the Virginia governors race and the presidential race, when looking at how both democratic candidates performed (Biden and Mcauliffe), there is a clear relationship between vote percentage and county. The five counties where Mcauliffe received the largest percentage of the votes is the same counties where Biden received the largest percentage of votes. These results can be seen in [Table One] in addition to the table below.
+
+```{r}
+#the following information will be saved as dem_table_two, editing updated_joined_vacomparison
+dem_table_two <- updated_joined_vacomparison%>%
+  #the data set will be arranged in descending order based on the variable pct_mcauliffe (the percent of votes received by Mcauliffe)
+  arrange(desc(pct_mcauliffe))%>%
+  #head specifies that we want the new data set to include the top five counties where Mcauliffe received the largest percentage of votes
+  head(5)
+
+#the following data for the chart comes from the data set 'updated_joined_vacomparison'
+dem_table_two%>%
+#the variables chosen to be highlighted in this table are the following - locality, pct_mcauliffe, biden_pct
+select(locality, pct_mcauliffe, biden_pct) %>%
+  #we will create a data table
+  DT::datatable(
+    #rownames false removes the column of row names from the data set
+    rownames = FALSE, 
+               #options allows us to further customize the data table
+                options = list(
+                  #this data table will not include a search bar
+                  searching = FALSE, 
+                  #paging set as fasle puts all the data on one page
+                  paging = FALSE, 
+                  #the DOM elements include the table (t), table information summary (i), and pagination control (p)
+                  dom = "tip"))
+```
+
+##### Finding Two
+
+When comparing how Trump performed in the counties where Youngkin received the highest percentage of votes, the top five counties for both candidates is less clear cut than for the democratic candidates. Both Trump and Younkin received the highest percentage of the vote in Lee County. However, the following four counties do not appear in the same ordere. Scott County, Tazewell County, and Bland County appear in one of the following four spots for both candidates, but in different spots on the list. These results can be seen in [Table Two] in addition to the table below.
+
+```{r}
+#the following information will be saved as rep_table_two, editing updated_joined_vacomparison
+rep_table_two <- updated_joined_vacomparison%>%
+  #the data set will be arranged in descending order based on the variable pct_youngkin (the percent of votes received by Youngkin)
+  arrange(desc(pct_youngkin))%>%
+  #head specifies that we want the new data set to include the top five counties where Youngkin received the largest percentage of votes
+  head(5)
+
+#the following data for the chart comes from the data set 'updated_joined_vacomparison'
+rep_table_two%>%
+#the variables chosen to be highlighted in this table are the following - locality, pct_youngkin, trump_pct
+select(locality, pct_youngkin, trump_pct) %>%
+  #we will create a data table
+  DT::datatable(
+    #rownames false removes the column of row names from the data set
+    rownames = FALSE, 
+               #options allows us to further customize the data table
+                options = list(
+                  #this data table will not include a search bar
+                  searching = FALSE, 
+                  #paging set as fasle puts all the data on one page
+                  paging = FALSE, 
+                  #the DOM elements include the table (t), table information summary (i), and pagination control (p)
+                  dom = "tip"))
+```
+
+##### Finding Three
+
+Comparing the performance of both democratic candidates in Virginia, Biden performed better than Mcauliffe in every county in Virginia. In other words, in every county in Virginia, Biden received a higher percentage of the votes when compared to Mcauliffe's performance in that same county. These results can be seen in [Table Two] in addition to the table below.
+
+```{r}
+#the following data for the chart comes from the data set 'updated_joined_vacomparison'
+updated_joined_vacomparison%>%
+#the variables chosen to be highlighted in this table are the following - locality, compare_dem, pct_mcauliffe, biden_pct
+select(locality, compare_dem, pct_mcauliffe, biden_pct) %>%
+  #we will create a data table
+  DT::datatable(
+    #rownames false removes the column of row names from the data set
+    rownames = FALSE, 
+               #options allows us to further customize the data table
+                options = list(
+                  #this data table will not include a search bar
+                  searching = FALSE, 
+                  #paging set as fasle puts all the data on one page
+                  paging = FALSE, 
+                  #the DOM elements include the table (t), table information summary (i), and pagination control (p)
+                  dom = "tip"))
+
 ```
