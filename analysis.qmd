@@ -8,7 +8,7 @@ format:
     code-tools: true
 ---
 
-# Percentage of the US Population with a Bachelor's Degree and Higher
+## Percentage of the US Population with a Bachelor's Degree and Higher
 
 We'll start with loading our libraries.
 
@@ -30,19 +30,28 @@ options(tigris_class = "sf")
 Below are the census variables use for the data analysis.
 
 ```{r}
+            #pulling census data for education total
 myvars <- c(education_total = "B06009_001",
+            #pulling census data for information on education levels for those with a bachelors degree
             education_bachelors = "B06009_005",
+            #pulling census data for information on education levels for those with a graduate degree
             education_gradprofess = "B06009_006")
+#all the data above will be put into the vector 'myvars'
 
 ```
 
 Using the `get_acs()` function in tidycensus, we will be able to see the previously identified variables on the state-level.
 
 ```{r}
-
-education_one <- get_acs(geography = "state",
+#the following information will be saved as education_one, using get_acs to combine the following varaiables into a new data chart
+education_one <- get_acs(
+  #organizing the data by the state level
+  geography = "state",
+  #the variables we will be measuring are contained in the vector defined earlier, myvars.
   variables = c(myvars),
+  #wide is used so that each variable present in myvars will get its own column
   output = "wide",
+  #the state level data will include GIS data, data points to coordinate our variables (organized on the state level) which will allow us to map our data
   geometry = TRUE
   )
 
@@ -51,10 +60,12 @@ education_one <- get_acs(geography = "state",
 To clean up the data set, I used the `select()` function to remove the three "margin of error" columns.
 
 ```{r}
-
+#the following information will be saved as education_two, editing education_one
 education_two <- education_one %>%
+  #the select function will select any column title with an 'M' at the end and remove it
   select(-ends_with("M"))
 
+#names allows the user to see the names of the columns of education_two to ensure the desired edits were made
 names(education_two)
 
 
@@ -63,13 +74,16 @@ names(education_two)
 Using the `mutate()` function, I created a new column that contains the percentage of people with a bachelor's or higher degree for each state.
 
 ```{r}
-
+#the following information will be saved as education_two_mutated, editing education_two
 education_two_mutated <- education_two %>%
   mutate(
+    #create new column of total indivuduals with a bachelors degree or above by adding the total people with bachelor degrees and people with master degrees
     total_above_bach = education_bachelorsE + education_gradprofessE,
+   #create new column of percent of indivuduals with a bachelors degree or above by dividing the total education population by the previous metric. Then multiplying by 100
     pct_edu_above_bach = total_above_bach/education_totalE * 100
   )
 
+#glimpse allows us to see a sample of the table associated with the education_two_mutated data set
 glimpse(education_two_mutated)
 
 ```
@@ -78,10 +92,13 @@ After removing Alaska, Hawaii, and Puerto Rico, I made a map of the continental 
 
 ```{r}
 
+#the following information will be saved as mutate_edu_two, editing education_two_mutated. NAME ! will remove Alaska from the dataset
 mutate_edu_two <- subset(education_two_mutated, NAME != "Alaska")
 
+#the following information will be saved as mutate_two_edu_two, editing mutate_edu_two NAME ! will remove Hawaii from the dataset
 mutate_two_edu_two <- subset(mutate_edu_two, NAME != "Hawaii")
 
+#the following information will be saved as mutate_final_edu_two, editing mutate_two_edu_two NAME ! will remove Puerto Rico from the dataset
 mutate_final_edu_two <- subset(mutate_two_edu_two, NAME != "Puerto Rico")
 
 
@@ -90,10 +107,12 @@ mutate_final_edu_two <- subset(mutate_two_edu_two, NAME != "Puerto Rico")
 Using the tmap() package, I created the final version of the shaded map for the continental U.S. that shows the percentage of Bachelor's-and-higher populations in each state.
 
 ```{r}
-
+#tm_mode highlights that we want the data to be plotted on a map
 tmap_mode(mode = "plot")
 
+#we will be mapping the data from the data set mutate_final_edu_two
 tm_shape(mutate_final_edu_two) +
+  #the data for the percent of indivuduals with a bachelors degree or above will be filled in alligning with the GIS data 
   tm_polygons("pct_edu_above_bach", id = "GEOID")
 
 

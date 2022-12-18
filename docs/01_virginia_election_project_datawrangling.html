@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="putyournamehere">
 
-<title>Zoe Bourne Portfolio - Analysis Walkthrough</title>
+<title>Zoe Bourne Portfolio - Virginia Election Project</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -4013,7 +4014,7 @@ vertical-align: -.125em;
     <a class="nav-link" href="./featured_story.qmd">Featured Story</a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./analysis.html" aria-current="page">Analysis Walkthrough</a>
+    <a class="nav-link" href="./analysis.html">Analysis Walkthrough</a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./02_virigina_election_project_youranalysis.qmd">Virginia Election Analysis</a>
@@ -4033,7 +4034,15 @@ vertical-align: -.125em;
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#percentage-of-the-us-population-with-a-bachelors-degree-and-higher" id="toc-percentage-of-the-us-population-with-a-bachelors-degree-and-higher" class="nav-link active" data-scroll-target="#percentage-of-the-us-population-with-a-bachelors-degree-and-higher">Percentage of the US Population with a Bachelor’s Degree and Higher</a></li>
+  <li><a href="#getting-2020-presidential-results" id="toc-getting-2020-presidential-results" class="nav-link active" data-scroll-target="#getting-2020-presidential-results">Getting 2020 Presidential results</a></li>
+  <li><a href="#getting-2021-virginia-governor-results" id="toc-getting-2021-virginia-governor-results" class="nav-link" data-scroll-target="#getting-2021-virginia-governor-results">Getting 2021 Virginia governor results</a>
+  <ul class="collapse">
+  <li><a href="#reshaping" id="toc-reshaping" class="nav-link" data-scroll-target="#reshaping">Reshaping</a></li>
+  </ul></li>
+  <li><a href="#putting-things-together---joining" id="toc-putting-things-together---joining" class="nav-link" data-scroll-target="#putting-things-together---joining">Putting things together - joining</a>
+  <ul class="collapse">
+  <li><a href="#comparing-gov-vs.-prez-results" id="toc-comparing-gov-vs.-prez-results" class="nav-link" data-scroll-target="#comparing-gov-vs.-prez-results">Comparing gov vs. prez results</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -4042,13 +4051,19 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Analysis Walkthrough</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Virginia Election Project</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>putyournamehere </p>
+          </div>
+  </div>
     
     
   </div>
@@ -4056,375 +4071,449 @@ vertical-align: -.125em;
 
 </header>
 
-<section id="percentage-of-the-us-population-with-a-bachelors-degree-and-higher" class="level2">
-<h2 class="anchored" data-anchor-id="percentage-of-the-us-population-with-a-bachelors-degree-and-higher">Percentage of the US Population with a Bachelor’s Degree and Higher</h2>
-<p>We’ll start with loading our libraries.</p>
-<p>Below are the census variables use for the data analysis.</p>
+<section id="getting-2020-presidential-results" class="level1">
+<h1>Getting 2020 Presidential results</h1>
+<p>Data available here: <a href="https://historical.elections.virginia.gov/elections/view/144567/" class="uri">https://historical.elections.virginia.gov/elections/view/144567/</a></p>
+<p>A little column cleaning and we’ll load in the data file.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>            <span class="co">#pulling census data for education total</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>myvars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">education_total =</span> <span class="st">&quot;B06009_001&quot;</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>            <span class="co">#pulling census data for information on education levels for those with a bachelors degree</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">education_bachelors =</span> <span class="st">&quot;B06009_005&quot;</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="co">#pulling census data for information on education levels for those with a graduate degree</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">education_gradprofess =</span> <span class="st">&quot;B06009_006&quot;</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#all the data above will be put into the vector &#39;myvars&#39;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>Using the <code>get_acs()</code> function in tidycensus, we will be able to see the previously identified variables on the state-level.</p>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as education_one, using get_acs to combine the following varaiables into a new data chart</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>education_one <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#organizing the data by the state level</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">geography =</span> <span class="st">&quot;state&quot;</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#the variables we will be measuring are contained in the vector defined earlier, myvars.</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">c</span>(myvars),</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#wide is used so that each variable present in myvars will get its own column</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">&quot;wide&quot;</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#the state level data will include GIS data, data points to coordinate our variables (organized on the state level) which will allow us to map our data</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">geometry =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;processed_data/va_2020_prez_cleaned.csv&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Getting data from the 2016-2020 5-year ACS</code></pre>
+<pre><code>Rows: 134 Columns: 4
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr (1): locality
+num (3): biden, trump, total_votes_2021_prez
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Downloading feature geometry from the Census website.  To cache shapefiles for use in future sessions, set `options(tigris_use_cache = TRUE)`.</code></pre>
 </div>
+<p>Let’s see what we have</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prez_2020) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |=                                                                     |   1%
-  |                                                                            
-  |=                                                                     |   2%
-  |                                                                            
-  |==                                                                    |   3%
-  |                                                                            
-  |===                                                                   |   4%
-  |                                                                            
-  |===                                                                   |   5%
-  |                                                                            
-  |====                                                                  |   5%
-  |                                                                            
-  |====                                                                  |   6%
-  |                                                                            
-  |=====                                                                 |   7%
-  |                                                                            
-  |======                                                                |   8%
-  |                                                                            
-  |======                                                                |   9%
-  |                                                                            
-  |=======                                                               |  10%
-  |                                                                            
-  |========                                                              |  11%
-  |                                                                            
-  |========                                                              |  12%
-  |                                                                            
-  |=========                                                             |  13%
-  |                                                                            
-  |==========                                                            |  14%
-  |                                                                            
-  |==========                                                            |  15%
-  |                                                                            
-  |===========                                                           |  15%
-  |                                                                            
-  |===========                                                           |  16%
-  |                                                                            
-  |============                                                          |  16%
-  |                                                                            
-  |============                                                          |  17%
-  |                                                                            
-  |============                                                          |  18%
-  |                                                                            
-  |=============                                                         |  18%
-  |                                                                            
-  |==============                                                        |  19%
-  |                                                                            
-  |==============                                                        |  20%
-  |                                                                            
-  |==============                                                        |  21%
-  |                                                                            
-  |===============                                                       |  21%
-  |                                                                            
-  |===============                                                       |  22%
-  |                                                                            
-  |================                                                      |  23%
-  |                                                                            
-  |=================                                                     |  24%
-  |                                                                            
-  |=================                                                     |  25%
-  |                                                                            
-  |==================                                                    |  26%
-  |                                                                            
-  |===================                                                   |  27%
-  |                                                                            
-  |====================                                                  |  29%
-  |                                                                            
-  |=====================                                                 |  29%
-  |                                                                            
-  |=====================                                                 |  30%
-  |                                                                            
-  |======================                                                |  31%
-  |                                                                            
-  |======================                                                |  32%
-  |                                                                            
-  |=======================                                               |  32%
-  |                                                                            
-  |=======================                                               |  33%
-  |                                                                            
-  |========================                                              |  34%
-  |                                                                            
-  |========================                                              |  35%
-  |                                                                            
-  |=========================                                             |  35%
-  |                                                                            
-  |=========================                                             |  36%
-  |                                                                            
-  |==========================                                            |  37%
-  |                                                                            
-  |==========================                                            |  38%
-  |                                                                            
-  |===========================                                           |  38%
-  |                                                                            
-  |============================                                          |  40%
-  |                                                                            
-  |=============================                                         |  41%
-  |                                                                            
-  |=============================                                         |  42%
-  |                                                                            
-  |==============================                                        |  43%
-  |                                                                            
-  |===============================                                       |  44%
-  |                                                                            
-  |================================                                      |  45%
-  |                                                                            
-  |================================                                      |  46%
-  |                                                                            
-  |=================================                                     |  47%
-  |                                                                            
-  |=================================                                     |  48%
-  |                                                                            
-  |==================================                                    |  48%
-  |                                                                            
-  |==================================                                    |  49%
-  |                                                                            
-  |===================================                                   |  49%
-  |                                                                            
-  |===================================                                   |  50%
-  |                                                                            
-  |===================================                                   |  51%
-  |                                                                            
-  |====================================                                  |  51%
-  |                                                                            
-  |=====================================                                 |  52%
-  |                                                                            
-  |=====================================                                 |  53%
-  |                                                                            
-  |======================================                                |  54%
-  |                                                                            
-  |======================================                                |  55%
-  |                                                                            
-  |=======================================                               |  56%
-  |                                                                            
-  |========================================                              |  57%
-  |                                                                            
-  |=========================================                             |  58%
-  |                                                                            
-  |=========================================                             |  59%
-  |                                                                            
-  |==========================================                            |  60%
-  |                                                                            
-  |===========================================                           |  62%
-  |                                                                            
-  |============================================                          |  62%
-  |                                                                            
-  |============================================                          |  63%
-  |                                                                            
-  |=============================================                         |  64%
-  |                                                                            
-  |==============================================                        |  65%
-  |                                                                            
-  |==============================================                        |  66%
-  |                                                                            
-  |===============================================                       |  67%
-  |                                                                            
-  |===============================================                       |  68%
-  |                                                                            
-  |================================================                      |  69%
-  |                                                                            
-  |=================================================                     |  70%
-  |                                                                            
-  |=================================================                     |  71%
-  |                                                                            
-  |==================================================                    |  71%
-  |                                                                            
-  |==================================================                    |  72%
-  |                                                                            
-  |===================================================                   |  72%
-  |                                                                            
-  |===================================================                   |  73%
-  |                                                                            
-  |====================================================                  |  74%
-  |                                                                            
-  |====================================================                  |  75%
-  |                                                                            
-  |=====================================================                 |  75%
-  |                                                                            
-  |=====================================================                 |  76%
-  |                                                                            
-  |======================================================                |  77%
-  |                                                                            
-  |=======================================================               |  78%
-  |                                                                            
-  |=======================================================               |  79%
-  |                                                                            
-  |========================================================              |  79%
-  |                                                                            
-  |========================================================              |  80%
-  |                                                                            
-  |========================================================              |  81%
-  |                                                                            
-  |=========================================================             |  81%
-  |                                                                            
-  |=========================================================             |  82%
-  |                                                                            
-  |==========================================================            |  82%
-  |                                                                            
-  |==========================================================            |  83%
-  |                                                                            
-  |===========================================================           |  84%
-  |                                                                            
-  |===========================================================           |  85%
-  |                                                                            
-  |============================================================          |  85%
-  |                                                                            
-  |============================================================          |  86%
-  |                                                                            
-  |=============================================================         |  87%
-  |                                                                            
-  |==============================================================        |  88%
-  |                                                                            
-  |==============================================================        |  89%
-  |                                                                            
-  |===============================================================       |  90%
-  |                                                                            
-  |================================================================      |  91%
-  |                                                                            
-  |================================================================      |  92%
-  |                                                                            
-  |=================================================================     |  93%
-  |                                                                            
-  |=================================================================     |  94%
-  |                                                                            
-  |==================================================================    |  94%
-  |                                                                            
-  |==================================================================    |  95%
-  |                                                                            
-  |===================================================================   |  95%
-  |                                                                            
-  |===================================================================   |  96%
-  |                                                                            
-  |====================================================================  |  97%
-  |                                                                            
-  |====================================================================  |  98%
-  |                                                                            
-  |===================================================================== |  98%
-  |                                                                            
-  |===================================================================== |  99%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
+<pre><code># A tibble: 6 × 4
+  locality         biden trump total_votes_2021_prez
+  &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt;                 &lt;dbl&gt;
+1 Accomack County   7578  9172                 16962
+2 Albemarle County 42466 20804                 64657
+3 Alexandria City  66240 14544                 82508
+4 Alleghany County  2243  5859                  8203
+5 Amelia County     2411  5390                  7893
+6 Amherst County    5672 11041                 17005</code></pre>
 </div>
 </div>
-<p>To clean up the data set, I used the <code>select()</code> function to remove the three “margin of error” columns.</p>
+<p>Calculating percentage of the vote</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as education_two, editing education_one</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>education_two <span class="ot">&lt;-</span> education_one <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#the select function will select any column title with an &#39;M&#39; at the end and remove it</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">ends_with</span>(<span class="st">&quot;M&quot;</span>))</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#names allows the user to see the names of the columns of education_two to ensure the desired edits were made</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(education_two)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">biden_pct =</span> biden<span class="sc">/</span>total_votes_2021_prez</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;GEOID&quot;                  &quot;NAME&quot;                   &quot;education_totalE&quot;      
-[4] &quot;education_bachelorsE&quot;   &quot;education_gradprofessE&quot; &quot;geometry&quot;              </code></pre>
+<pre><code># A tibble: 134 × 5
+   locality           biden trump total_votes_2021_prez biden_pct
+   &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt;                 &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Accomack County     7578  9172                 16962     0.447
+ 2 Albemarle County   42466 20804                 64657     0.657
+ 3 Alexandria City    66240 14544                 82508     0.803
+ 4 Alleghany County    2243  5859                  8203     0.273
+ 5 Amelia County       2411  5390                  7893     0.305
+ 6 Amherst County      5672 11041                 17005     0.334
+ 7 Appomattox County   2418  6702                  9268     0.261
+ 8 Arlington County  105344 22318                130699     0.806
+ 9 Augusta County     10840 30714                 42278     0.256
+10 Bath County          646  1834                  2501     0.258
+# … with 124 more rows</code></pre>
 </div>
 </div>
-<p>Using the <code>mutate()</code> function, I created a new column that contains the percentage of people with a bachelor’s or higher degree for each state.</p>
+<p>Now let’s do some rounding and move that decimal point</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as education_two_mutated, editing education_two</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>education_two_mutated <span class="ot">&lt;-</span> education_two <span class="sc">%&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">#create new column of total indivuduals with a bachelors degree or above by adding the total people with bachelor degrees and people with master degrees</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_above_bach =</span> education_bachelorsE <span class="sc">+</span> education_gradprofessE,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>   <span class="co">#create new column of percent of indivuduals with a bachelors degree or above by dividing the total education population by the previous metric. Then multiplying by 100</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_edu_above_bach =</span> total_above_bach<span class="sc">/</span>education_totalE <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse allows us to see a sample of the table associated with the education_two_mutated data set</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(education_two_mutated)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">biden_pct =</span> janitor<span class="sc">::</span><span class="fu">round_half_up</span>(biden <span class="sc">/</span> total_votes_2021_prez <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 52
-Columns: 8
-$ GEOID                  &lt;chr&gt; &quot;35&quot;, &quot;72&quot;, &quot;06&quot;, &quot;01&quot;, &quot;13&quot;, &quot;05&quot;, &quot;41&quot;, &quot;28&quot;,…
-$ NAME                   &lt;chr&gt; &quot;New Mexico&quot;, &quot;Puerto Rico&quot;, &quot;California&quot;, &quot;Ala…
-$ education_totalE       &lt;dbl&gt; 1415298, NA, 26665143, 3344006, 6996425, 202672…
-$ education_bachelorsE   &lt;dbl&gt; 223875, NA, 5764827, 546674, 1377311, 308648, 6…
-$ education_gradprofessE &lt;dbl&gt; 174413, NA, 3492046, 330370, 875351, 174047, 38…
-$ geometry               &lt;MULTIPOLYGON [°]&gt; MULTIPOLYGON (((-109.0502 3..., MU…
-$ total_above_bach       &lt;dbl&gt; 398288, NA, 9256873, 877044, 2252662, 482695, 1…
-$ pct_edu_above_bach     &lt;dbl&gt; 28.14164, NA, 34.71526, 26.22735, 32.19733, 23.…</code></pre>
+<pre><code># A tibble: 134 × 5
+   locality           biden trump total_votes_2021_prez biden_pct
+   &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt;                 &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Accomack County     7578  9172                 16962      44.7
+ 2 Albemarle County   42466 20804                 64657      65.7
+ 3 Alexandria City    66240 14544                 82508      80.3
+ 4 Alleghany County    2243  5859                  8203      27.3
+ 5 Amelia County       2411  5390                  7893      30.5
+ 6 Amherst County      5672 11041                 17005      33.4
+ 7 Appomattox County   2418  6702                  9268      26.1
+ 8 Arlington County  105344 22318                130699      80.6
+ 9 Augusta County     10840 30714                 42278      25.6
+10 Bath County          646  1834                  2501      25.8
+# … with 124 more rows</code></pre>
 </div>
 </div>
-<p>After removing Alaska, Hawaii, and Puerto Rico, I made a map of the continental U.S. showing the new percentage measure created in the previous code chunk.</p>
+<p>Now trump too</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as mutate_edu_two, editing education_two_mutated. NAME ! will remove Alaska from the dataset</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>mutate_edu_two <span class="ot">&lt;-</span> <span class="fu">subset</span>(education_two_mutated, NAME <span class="sc">!=</span> <span class="st">&quot;Alaska&quot;</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as mutate_two_edu_two, editing mutate_edu_two NAME ! will remove Hawaii from the dataset</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>mutate_two_edu_two <span class="ot">&lt;-</span> <span class="fu">subset</span>(mutate_edu_two, NAME <span class="sc">!=</span> <span class="st">&quot;Hawaii&quot;</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as mutate_final_edu_two, editing mutate_two_edu_two NAME ! will remove Puerto Rico from the dataset</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>mutate_final_edu_two <span class="ot">&lt;-</span> <span class="fu">subset</span>(mutate_two_edu_two, NAME <span class="sc">!=</span> <span class="st">&quot;Puerto Rico&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="ot">&lt;-</span> prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">biden_pct =</span> janitor<span class="sc">::</span><span class="fu">round_half_up</span>(biden <span class="sc">/</span> total_votes_2021_prez <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">trump_pct =</span> janitor<span class="sc">::</span><span class="fu">round_half_up</span>(trump <span class="sc">/</span> total_votes_2021_prez <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prez_2020)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  locality         biden trump total_votes_2021_prez biden_pct trump_pct
+  &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt;                 &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 Accomack County   7578  9172                 16962      44.7      54.1
+2 Albemarle County 42466 20804                 64657      65.7      32.2
+3 Alexandria City  66240 14544                 82508      80.3      17.6
+4 Alleghany County  2243  5859                  8203      27.3      71.4
+5 Amelia County     2411  5390                  7893      30.6      68.3
+6 Amherst County    5672 11041                 17005      33.4      64.9</code></pre>
 </div>
-<p>Using the tmap() package, I created the final version of the shaded map for the continental U.S. that shows the percentage of Bachelor’s-and-higher populations in each state.</p>
+</div>
+</section>
+<section id="getting-2021-virginia-governor-results" class="level1">
+<h1>Getting 2021 Virginia governor results</h1>
+<p>Data available from the state here: <a href="https://results.elections.virginia.gov/vaelections/2021%20November%20General/Site/Statewide.html" class="uri">https://results.elections.virginia.gov/vaelections/2021%20November%20General/Site/Statewide.html</a></p>
+<p>In JSON format only</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tm_mode highlights that we want the data to be plotted on a map</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="at">mode =</span> <span class="st">&quot;plot&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>tmap mode set to plotting</code></pre>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#build the url</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;https://results.elections.virginia.gov/vaelections/2021%20November%20General/Json/Governor.json&quot;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>get_info <span class="ot">&lt;-</span> <span class="fu">GET</span>(url)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>this.raw.content <span class="ot">&lt;-</span> <span class="fu">rawToChar</span>(get_info<span class="sc">$</span>content)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>this.content <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(this.raw.content)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">#dataframe from just the 6 content </span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>content_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(this.content[[<span class="dv">6</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#we will be mapping the data from the data set mutate_final_edu_two</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mutate_final_edu_two) <span class="sc">+</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#the data for the percent of indivuduals with a bachelors degree or above will be filled in alligning with the GIS data </span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;pct_edu_above_bach&quot;</span>, <span class="at">id =</span> <span class="st">&quot;GEOID&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAAt1BMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kJA6kLY6kNtmAABmOgBmOjpmZgBmZmZmkLZmkNtmtttmtv+QOgCQZjqQZmaQkDqQkLaQttuQ29uQ2/+2ZgC2Zjq2kDq2kGa2tra229u22/+2///MTALbkDrbkGbbtmbbtpDb27bb2//b///4iyL+z2b+9rr/tmb/25D/27b/29v//7b//9v///+ah63wAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO29CZvlxnVgmVRTKrlnpCapbmhseqaXonssTVlqk5klNZn//3dNvYcdCAARN27EvQDO+WyxMt8DYrtxMhYsL+8AACDixToDAABnBYECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAECgAgBIECAAhBoAAAQhAoAIAQBAoAIASBAgAIQaAAAEIQKACAEAQKACAEgQIACEGgAABCECgAgBAE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" class="img-fluid" width="672"></p>
+<p>Where are candidates themselves? They are “nested” inside. We’ll use <code>unnest()</code>to expand things.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#unnest</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> content_df <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> Candidates)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 9
+  Locali…¹ $Loca…² Preci…³ Preci…⁴ LastM…⁵ Ballo…⁶ Ballo…⁷ Votes Perce…⁸ Polit…⁹
+  &lt;chr&gt;    &lt;chr&gt;     &lt;int&gt;   &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;     &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  
+1 ACCOMAC… 001          19      19 2021-1… Glenn …  1   e0  7878 61.08%  Republ…
+2 ACCOMAC… 001          19      19 2021-1… Terry …  2   e0  4948 38.37%  Democr…
+3 ACCOMAC… 001          19      19 2021-1… Prince…  3   e0    67 0.52%   Libera…
+4 ACCOMAC… 001          19      19 2021-1… Write …  2.15e9     4 0.03%   Write-…
+5 ALBEMAR… 003          33      33 2021-1… Glenn …  1   e0 19141 37.21%  Republ…
+6 ALBEMAR… 003          33      33 2021-1… Terry …  2   e0 31919 62.05%  Democr…
+# … with abbreviated variable names ¹​Locality$LocalityName, ²​$LocalityCode,
+#   ³​PrecinctsReporting, ⁴​PrecinctsParticipating, ⁵​LastModified, ⁶​BallotName,
+#   ⁷​BallotOrder, ⁸​Percentage, ⁹​PoliticalParty</code></pre>
 </div>
+</div>
+<p>Unnest again on locality</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> Locality)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 10
+  Locali…¹ Local…² Preci…³ Preci…⁴ LastM…⁵ Ballo…⁶ Ballo…⁷ Votes Perce…⁸ Polit…⁹
+  &lt;chr&gt;    &lt;chr&gt;     &lt;int&gt;   &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;     &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  
+1 ACCOMAC… 001          19      19 2021-1… Glenn …  1   e0  7878 61.08%  Republ…
+2 ACCOMAC… 001          19      19 2021-1… Terry …  2   e0  4948 38.37%  Democr…
+3 ACCOMAC… 001          19      19 2021-1… Prince…  3   e0    67 0.52%   Libera…
+4 ACCOMAC… 001          19      19 2021-1… Write …  2.15e9     4 0.03%   Write-…
+5 ALBEMAR… 003          33      33 2021-1… Glenn …  1   e0 19141 37.21%  Republ…
+6 ALBEMAR… 003          33      33 2021-1… Terry …  2   e0 31919 62.05%  Democr…
+# … with abbreviated variable names ¹​LocalityName, ²​LocalityCode,
+#   ³​PrecinctsReporting, ⁴​PrecinctsParticipating, ⁵​LastModified, ⁶​BallotName,
+#   ⁷​BallotOrder, ⁸​Percentage, ⁹​PoliticalParty</code></pre>
+</div>
+</div>
+<p>Great.</p>
+<p>We’ll give it a new name to make it easier for us and clean the column names, remove extraneous ones.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gov_2021 <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>precincts_reporting,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>precincts_participating,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>last_modified,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>ballot_order)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gov_2021)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  locality_name    locality_code ballot_name          votes percentage politic…¹
+  &lt;chr&gt;            &lt;chr&gt;         &lt;chr&gt;                &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;    
+1 ACCOMACK COUNTY  001           Glenn A. Youngkin     7878 61.08%     Republic…
+2 ACCOMACK COUNTY  001           Terry R. McAuliffe    4948 38.37%     Democrat…
+3 ACCOMACK COUNTY  001           Princess L. Blanding    67 0.52%      Liberati…
+4 ACCOMACK COUNTY  001           Write In                 4 0.03%      Write-In 
+5 ALBEMARLE COUNTY 003           Glenn A. Youngkin    19141 37.21%     Republic…
+6 ALBEMARLE COUNTY 003           Terry R. McAuliffe   31919 62.05%     Democrat…
+# … with abbreviated variable name ¹​political_party</code></pre>
+</div>
+</div>
+<p>What’s the issue we may have here?</p>
+<p>This is actually tidy data which is good - but for comparing the candidates we’d want them on the same row.</p>
+<section id="reshaping" class="level2">
+<h2 class="anchored" data-anchor-id="reshaping">Reshaping</h2>
+<p>Enter pivot_wider().</p>
+<p>We’ll get rid of everything we don’t need first.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>gov_2021 <span class="ot">&lt;-</span> gov_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ballot_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Glenn A. Youngkin&quot;</span>, <span class="st">&quot;Terry R. McAuliffe&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>locality_code,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>political_party)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>gov_2021</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 266 × 4
+   locality_name    ballot_name        votes percentage
+   &lt;chr&gt;            &lt;chr&gt;              &lt;int&gt; &lt;chr&gt;     
+ 1 ACCOMACK COUNTY  Glenn A. Youngkin   7878 61.08%    
+ 2 ACCOMACK COUNTY  Terry R. McAuliffe  4948 38.37%    
+ 3 ALBEMARLE COUNTY Glenn A. Youngkin  19141 37.21%    
+ 4 ALBEMARLE COUNTY Terry R. McAuliffe 31919 62.05%    
+ 5 ALEXANDRIA CITY  Glenn A. Youngkin  14013 24.02%    
+ 6 ALEXANDRIA CITY  Terry R. McAuliffe 43866 75.20%    
+ 7 ALLEGHANY COUNTY Glenn A. Youngkin   4530 74.52%    
+ 8 ALLEGHANY COUNTY Terry R. McAuliffe  1518 24.97%    
+ 9 AMELIA COUNTY    Glenn A. Youngkin   4720 74.19%    
+10 AMELIA COUNTY    Terry R. McAuliffe  1617 25.42%    
+# … with 256 more rows</code></pre>
+</div>
+</div>
+<p>Now we’ll do the spreading out to reshape.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>gov_2021_wide <span class="ot">&lt;-</span> gov_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> ballot_name, <span class="at">values_from =</span> <span class="fu">c</span>(votes, percentage))</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>gov_2021_wide</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 133 × 5
+   locality_name     `votes_Glenn A. Youngkin` votes_Terry R. …¹ perce…² perce…³
+   &lt;chr&gt;                                 &lt;int&gt;             &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  
+ 1 ACCOMACK COUNTY                        7878              4948 61.08%  38.37% 
+ 2 ALBEMARLE COUNTY                      19141             31919 37.21%  62.05% 
+ 3 ALEXANDRIA CITY                       14013             43866 24.02%  75.20% 
+ 4 ALLEGHANY COUNTY                       4530              1518 74.52%  24.97% 
+ 5 AMELIA COUNTY                          4720              1617 74.19%  25.42% 
+ 6 AMHERST COUNTY                         9731              3897 71.00%  28.43% 
+ 7 APPOMATTOX COUNTY                      5971              1438 80.26%  19.33% 
+ 8 ARLINGTON COUNTY                      21548             73013 22.63%  76.67% 
+ 9 AUGUSTA COUNTY                        26196              7231 77.93%  21.51% 
+10 BATH COUNTY                            1539               396 79.04%  20.34% 
+# … with 123 more rows, and abbreviated variable names
+#   ¹​`votes_Terry R. McAuliffe`, ²​`percentage_Glenn A. Youngkin`,
+#   ³​`percentage_Terry R. McAuliffe`</code></pre>
+</div>
+</div>
+<p>Nice.</p>
+<p>This is giving us some pretty long column names. we can change them after the fact using <code>rename()</code>. But first let’s clean the names to make it easier.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>gov_2021_wide <span class="ot">&lt;-</span> gov_2021_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>()</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gov_2021_wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  locality_name    votes_glenn_a_youngkin votes_terry_r_mc_aul…¹ perce…² perce…³
+  &lt;chr&gt;                             &lt;int&gt;                  &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  
+1 ACCOMACK COUNTY                    7878                   4948 61.08%  38.37% 
+2 ALBEMARLE COUNTY                  19141                  31919 37.21%  62.05% 
+3 ALEXANDRIA CITY                   14013                  43866 24.02%  75.20% 
+4 ALLEGHANY COUNTY                   4530                   1518 74.52%  24.97% 
+5 AMELIA COUNTY                      4720                   1617 74.19%  25.42% 
+6 AMHERST COUNTY                     9731                   3897 71.00%  28.43% 
+# … with abbreviated variable names ¹​votes_terry_r_mc_auliffe,
+#   ²​percentage_glenn_a_youngkin, ³​percentage_terry_r_mc_auliffe</code></pre>
+</div>
+</div>
+<p>Now let’s rename, and we’ll use similar names to what we had earlier in our 2021 results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>gov_2021_wide <span class="ot">&lt;-</span> gov_2021_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">youngkin =</span> votes_glenn_a_youngkin,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mcauliffe =</span> votes_terry_r_mc_auliffe,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_youngkin =</span> percentage_glenn_a_youngkin,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_mcauliffe =</span> percentage_terry_r_mc_auliffe</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gov_2021_wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  locality_name    youngkin mcauliffe pct_youngkin pct_mcauliffe
+  &lt;chr&gt;               &lt;int&gt;     &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;        
+1 ACCOMACK COUNTY      7878      4948 61.08%       38.37%       
+2 ALBEMARLE COUNTY    19141     31919 37.21%       62.05%       
+3 ALEXANDRIA CITY     14013     43866 24.02%       75.20%       
+4 ALLEGHANY COUNTY     4530      1518 74.52%       24.97%       
+5 AMELIA COUNTY        4720      1617 74.19%       25.42%       
+6 AMHERST COUNTY       9731      3897 71.00%       28.43%       </code></pre>
+</div>
+</div>
+<p>Bingo.</p>
+<p>There’s still one potential issue here. Can you see it?</p>
+<p>The percentage columns are actually text values, not numbers. And they have that <code>%</code> sign in the text too. Let’s fix that using a handy function from the readr package, <code>parse_number()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>gov_2021_wide <span class="ot">&lt;-</span> gov_2021_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_youngkin =</span> readr<span class="sc">::</span><span class="fu">parse_number</span>(pct_youngkin),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_mcauliffe =</span> readr<span class="sc">::</span><span class="fu">parse_number</span>(pct_mcauliffe)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gov_2021_wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  locality_name    youngkin mcauliffe pct_youngkin pct_mcauliffe
+  &lt;chr&gt;               &lt;int&gt;     &lt;int&gt;        &lt;dbl&gt;         &lt;dbl&gt;
+1 ACCOMACK COUNTY      7878      4948         61.1          38.4
+2 ALBEMARLE COUNTY    19141     31919         37.2          62.0
+3 ALEXANDRIA CITY     14013     43866         24.0          75.2
+4 ALLEGHANY COUNTY     4530      1518         74.5          25.0
+5 AMELIA COUNTY        4720      1617         74.2          25.4
+6 AMHERST COUNTY       9731      3897         71            28.4</code></pre>
+</div>
+</div>
+<p>Perfect. Problem solved.</p>
+</section>
+</section>
+<section id="putting-things-together---joining" class="level1">
+<h1>Putting things together - joining</h1>
+<p>Now we want to actually join things up.</p>
+<p>Can we do that? Let’s check out our two tables</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>gov_2021_wide</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 133 × 5
+   locality_name     youngkin mcauliffe pct_youngkin pct_mcauliffe
+   &lt;chr&gt;                &lt;int&gt;     &lt;int&gt;        &lt;dbl&gt;         &lt;dbl&gt;
+ 1 ACCOMACK COUNTY       7878      4948         61.1          38.4
+ 2 ALBEMARLE COUNTY     19141     31919         37.2          62.0
+ 3 ALEXANDRIA CITY      14013     43866         24.0          75.2
+ 4 ALLEGHANY COUNTY      4530      1518         74.5          25.0
+ 5 AMELIA COUNTY         4720      1617         74.2          25.4
+ 6 AMHERST COUNTY        9731      3897         71            28.4
+ 7 APPOMATTOX COUNTY     5971      1438         80.3          19.3
+ 8 ARLINGTON COUNTY     21548     73013         22.6          76.7
+ 9 AUGUSTA COUNTY       26196      7231         77.9          21.5
+10 BATH COUNTY           1539       396         79.0          20.3
+# … with 123 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>prez_2020</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 134 × 6
+   locality           biden trump total_votes_2021_prez biden_pct trump_pct
+   &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt;                 &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Accomack County     7578  9172                 16962      44.7      54.1
+ 2 Albemarle County   42466 20804                 64657      65.7      32.2
+ 3 Alexandria City    66240 14544                 82508      80.3      17.6
+ 4 Alleghany County    2243  5859                  8203      27.3      71.4
+ 5 Amelia County       2411  5390                  7893      30.6      68.3
+ 6 Amherst County      5672 11041                 17005      33.4      64.9
+ 7 Appomattox County   2418  6702                  9268      26.1      72.3
+ 8 Arlington County  105344 22318                130699      80.6      17.1
+ 9 Augusta County     10840 30714                 42278      25.6      72.6
+10 Bath County          646  1834                  2501      25.8      73.3
+# … with 124 more rows</code></pre>
+</div>
+</div>
+<p>Few quick things to deal with… first let’s get rid of the total votes in 2021, we don’t need that anymore. But also the locality isn’t the same case as in our governor’s results, so let’s uppercase it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="ot">&lt;-</span> prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">locality =</span> <span class="fu">str_to_upper</span>(locality)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>total_votes_2021_prez)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>prez_2020</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 134 × 5
+   locality           biden trump biden_pct trump_pct
+   &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 ACCOMACK COUNTY     7578  9172      44.7      54.1
+ 2 ALBEMARLE COUNTY   42466 20804      65.7      32.2
+ 3 ALEXANDRIA CITY    66240 14544      80.3      17.6
+ 4 ALLEGHANY COUNTY    2243  5859      27.3      71.4
+ 5 AMELIA COUNTY       2411  5390      30.6      68.3
+ 6 AMHERST COUNTY      5672 11041      33.4      64.9
+ 7 APPOMATTOX COUNTY   2418  6702      26.1      72.3
+ 8 ARLINGTON COUNTY  105344 22318      80.6      17.1
+ 9 AUGUSTA COUNTY     10840 30714      25.6      72.6
+10 BATH COUNTY          646  1834      25.8      73.3
+# … with 124 more rows</code></pre>
+</div>
+</div>
+<p>Great. Now we’re all ready to join. Or are we?</p>
+<p>Look closely at the record counts for our two tables. It looks like the presidential results has an extra record perhaps? Let’s investigate.</p>
+<p>We can use <code>anti_join()</code> to see what’s in one table but not the other.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anti_join</span>(prez_2020, gov_2021_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;locality&quot;</span> <span class="ot">=</span> <span class="st">&quot;locality_name&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  locality                biden   trump biden_pct trump_pct
+  &lt;chr&gt;                   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 KING AND QUEEN COUNTY    1590    2450      38.6      59.5
+2 TOTALS                2413568 1962430      54.1      44  </code></pre>
+</div>
+</div>
+<p>There’s a total row in there! Well we don’t want that. Let’s take it out.</p>
+<p>Also though notice a second county didn’t match…want to be that might be because it’s differently worded? Let’s see by doing the anti-join in reverse now.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anti_join</span>(gov_2021_wide, prez_2020, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;locality_name&quot;</span> <span class="ot">=</span> <span class="st">&quot;locality&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  locality_name       youngkin mcauliffe pct_youngkin pct_mcauliffe
+  &lt;chr&gt;                  &lt;int&gt;     &lt;int&gt;        &lt;dbl&gt;         &lt;dbl&gt;
+1 KING &amp; QUEEN COUNTY     2112      1130         64.8          34.6</code></pre>
+</div>
+</div>
+<p>Yep that’s it. So let’s fix both of those things in the prez table.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="ot">&lt;-</span> prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(locality <span class="sc">!=</span> <span class="st">&quot;TOTALS&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">locality =</span> <span class="fu">str_replace</span>(locality, <span class="st">&quot;KING AND QUEEN&quot;</span>, <span class="st">&quot;KING &amp; QUEEN&quot;</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we’re ready. Let’s join.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>joined_vacomparison <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(prez_2020, gov_2021_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;locality&quot;</span> <span class="ot">=</span> <span class="st">&quot;locality_name&quot;</span>))</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(joined_vacomparison)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 9
+  locality         biden trump biden_pct trump…¹ young…² mcaul…³ pct_y…⁴ pct_m…⁵
+  &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+1 ACCOMACK COUNTY   7578  9172      44.7    54.1    7878    4948    61.1    38.4
+2 ALBEMARLE COUNTY 42466 20804      65.7    32.2   19141   31919    37.2    62.0
+3 ALEXANDRIA CITY  66240 14544      80.3    17.6   14013   43866    24.0    75.2
+4 ALLEGHANY COUNTY  2243  5859      27.3    71.4    4530    1518    74.5    25.0
+5 AMELIA COUNTY     2411  5390      30.6    68.3    4720    1617    74.2    25.4
+6 AMHERST COUNTY    5672 11041      33.4    64.9    9731    3897    71      28.4
+# … with abbreviated variable names ¹​trump_pct, ²​youngkin, ³​mcauliffe,
+#   ⁴​pct_youngkin, ⁵​pct_mcauliffe</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co">#save results to file for next step</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(joined_vacomparison, <span class="fu">here</span>(<span class="st">&quot;processed_data&quot;</span>, <span class="st">&quot;joined_vacomparison.rds&quot;</span>))</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(joined_vacomparison, <span class="fu">here</span>(<span class="st">&quot;processed_data&quot;</span>, <span class="st">&quot;joined_vacomparison.csv&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Alright! It worked.</p>
+<section id="comparing-gov-vs.-prez-results" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-gov-vs.-prez-results">Comparing gov vs. prez results</h2>
+<p>Now that things are join, let’s actually go ahead and start making columns to compare the two elections and how the candidates did this time compared with last time.</p>
+<p>Where should we go from here….?</p>
+<div class="cell">
+
 </div>
 
 
 <!-- -->
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -4577,124 +4666,309 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
-<div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Analysis Walkthrough&quot;</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">    self-contained: true</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Percentage of the US Population with a Bachelor&#39;s Degree and Higher</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>We&#39;ll start with loading our libraries.</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tigris)</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidycensus)</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmaptools)</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(writexl)</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">tigris_class =</span> <span class="st">&quot;sf&quot;</span>)</span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>Below are the census variables use for the data analysis.</span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>            <span class="co">#pulling census data for education total</span></span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>myvars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">education_total =</span> <span class="st">&quot;B06009_001&quot;</span>,</span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>            <span class="co">#pulling census data for information on education levels for those with a bachelors degree</span></span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>            <span class="at">education_bachelors =</span> <span class="st">&quot;B06009_005&quot;</span>,</span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>            <span class="co">#pulling census data for information on education levels for those with a graduate degree</span></span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>            <span class="at">education_gradprofess =</span> <span class="st">&quot;B06009_006&quot;</span>)</span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a><span class="co">#all the data above will be put into the vector &#39;myvars&#39;</span></span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>Using the <span class="in">`get_acs()`</span> function in tidycensus, we will be able to see the previously identified variables on the state-level.</span>
-<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as education_one, using get_acs to combine the following varaiables into a new data chart</span></span>
-<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>education_one <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(</span>
-<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>  <span class="co">#organizing the data by the state level</span></span>
-<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">geography =</span> <span class="st">&quot;state&quot;</span>,</span>
-<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>  <span class="co">#the variables we will be measuring are contained in the vector defined earlier, myvars.</span></span>
-<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">c</span>(myvars),</span>
-<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>  <span class="co">#wide is used so that each variable present in myvars will get its own column</span></span>
-<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">&quot;wide&quot;</span>,</span>
-<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>  <span class="co">#the state level data will include GIS data, data points to coordinate our variables (organized on the state level) which will allow us to map our data</span></span>
-<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">geometry =</span> <span class="cn">TRUE</span></span>
-<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a>To clean up the data set, I used the <span class="in">`select()`</span> function to remove the three &quot;margin of error&quot; columns.</span>
-<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as education_two, editing education_one</span></span>
-<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a>education_two <span class="ot">&lt;-</span> education_one <span class="sc">%&gt;%</span></span>
-<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a>  <span class="co">#the select function will select any column title with an &#39;M&#39; at the end and remove it</span></span>
-<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">ends_with</span>(<span class="st">&quot;M&quot;</span>))</span>
-<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a><span class="co">#names allows the user to see the names of the columns of education_two to ensure the desired edits were made</span></span>
-<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(education_two)</span>
-<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a>Using the <span class="in">`mutate()`</span> function, I created a new column that contains the percentage of people with a bachelor&#39;s or higher degree for each state.</span>
-<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as education_two_mutated, editing education_two</span></span>
-<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a>education_two_mutated <span class="ot">&lt;-</span> education_two <span class="sc">%&gt;%</span></span>
-<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a>    <span class="co">#create new column of total indivuduals with a bachelors degree or above by adding the total people with bachelor degrees and people with master degrees</span></span>
-<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_above_bach =</span> education_bachelorsE <span class="sc">+</span> education_gradprofessE,</span>
-<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a>   <span class="co">#create new column of percent of indivuduals with a bachelors degree or above by dividing the total education population by the previous metric. Then multiplying by 100</span></span>
-<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_edu_above_bach =</span> total_above_bach<span class="sc">/</span>education_totalE <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse allows us to see a sample of the table associated with the education_two_mutated data set</span></span>
-<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(education_two_mutated)</span>
-<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a>After removing Alaska, Hawaii, and Puerto Rico, I made a map of the continental U.S. showing the new percentage measure created in the previous code chunk.</span>
-<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as mutate_edu_two, editing education_two_mutated. NAME ! will remove Alaska from the dataset</span></span>
-<span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a>mutate_edu_two <span class="ot">&lt;-</span> <span class="fu">subset</span>(education_two_mutated, NAME <span class="sc">!=</span> <span class="st">&quot;Alaska&quot;</span>)</span>
-<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as mutate_two_edu_two, editing mutate_edu_two NAME ! will remove Hawaii from the dataset</span></span>
-<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a>mutate_two_edu_two <span class="ot">&lt;-</span> <span class="fu">subset</span>(mutate_edu_two, NAME <span class="sc">!=</span> <span class="st">&quot;Hawaii&quot;</span>)</span>
-<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a><span class="co">#the following information will be saved as mutate_final_edu_two, editing mutate_two_edu_two NAME ! will remove Puerto Rico from the dataset</span></span>
-<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a>mutate_final_edu_two <span class="ot">&lt;-</span> <span class="fu">subset</span>(mutate_two_edu_two, NAME <span class="sc">!=</span> <span class="st">&quot;Puerto Rico&quot;</span>)</span>
-<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a>Using the tmap() package, I created the final version of the shaded map for the continental U.S. that shows the percentage of Bachelor&#39;s-and-higher populations in each state.</span>
-<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a><span class="co">#tm_mode highlights that we want the data to be plotted on a map</span></span>
-<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="at">mode =</span> <span class="st">&quot;plot&quot;</span>)</span>
-<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a><span class="co">#we will be mapping the data from the data set mutate_final_edu_two</span></span>
-<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mutate_final_edu_two) <span class="sc">+</span></span>
-<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a>  <span class="co">#the data for the percent of indivuduals with a bachelors degree or above will be filled in alligning with the GIS data </span></span>
-<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;pct_edu_above_bach&quot;</span>, <span class="at">id =</span> <span class="st">&quot;GEOID&quot;</span>)</span>
-<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-130"><a href="#cb14-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<div class="sourceCode" id="cb42" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;Virginia Election Project&quot;</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;putyournamehere&quot;</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: true</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="co">    self-contained: true</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE, warning=FALSE, message=FALSE}</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a><span class="co"># library(knitr)</span></span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a><span class="co"># # print everything as paged ----</span></span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a><span class="co"># knit_print.data.frame &lt;- function (x, options, ...) {</span></span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a><span class="co">#   rmarkdown::paged_table(x, options) |&gt;</span></span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a><span class="co">#     rmarkdown:::print.paged_df()</span></span>
+<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span>
+<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a><span class="co"># registerS3method(&quot;knit_print&quot;, &quot;data.frame&quot;, knit_print.data.frame)</span></span>
+<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-34"><a href="#cb42-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-35"><a href="#cb42-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-36"><a href="#cb42-36" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-37"><a href="#cb42-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-38"><a href="#cb42-38" aria-hidden="true" tabindex="-1"></a><span class="fu"># Getting 2020 Presidential results </span></span>
+<span id="cb42-39"><a href="#cb42-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-40"><a href="#cb42-40" aria-hidden="true" tabindex="-1"></a>Data available here: <span class="ot">&lt;https://historical.elections.virginia.gov/elections/view/144567/&gt;</span></span>
+<span id="cb42-41"><a href="#cb42-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-42"><a href="#cb42-42" aria-hidden="true" tabindex="-1"></a>A little column cleaning and we&#39;ll load in the data file.</span>
+<span id="cb42-43"><a href="#cb42-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-46"><a href="#cb42-46" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-47"><a href="#cb42-47" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;processed_data/va_2020_prez_cleaned.csv&quot;</span>)</span>
+<span id="cb42-48"><a href="#cb42-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-49"><a href="#cb42-49" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-50"><a href="#cb42-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-51"><a href="#cb42-51" aria-hidden="true" tabindex="-1"></a>Let&#39;s see what we have</span>
+<span id="cb42-52"><a href="#cb42-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-55"><a href="#cb42-55" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-56"><a href="#cb42-56" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prez_2020) </span>
+<span id="cb42-57"><a href="#cb42-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-58"><a href="#cb42-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-59"><a href="#cb42-59" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-60"><a href="#cb42-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-61"><a href="#cb42-61" aria-hidden="true" tabindex="-1"></a>Calculating percentage of the vote</span>
+<span id="cb42-62"><a href="#cb42-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-65"><a href="#cb42-65" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-66"><a href="#cb42-66" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb42-67"><a href="#cb42-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-68"><a href="#cb42-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">biden_pct =</span> biden<span class="sc">/</span>total_votes_2021_prez</span>
+<span id="cb42-69"><a href="#cb42-69" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-70"><a href="#cb42-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-71"><a href="#cb42-71" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-72"><a href="#cb42-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-73"><a href="#cb42-73" aria-hidden="true" tabindex="-1"></a>Now let&#39;s do some rounding and move that decimal point</span>
+<span id="cb42-74"><a href="#cb42-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-77"><a href="#cb42-77" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-78"><a href="#cb42-78" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb42-79"><a href="#cb42-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-80"><a href="#cb42-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">biden_pct =</span> janitor<span class="sc">::</span><span class="fu">round_half_up</span>(biden <span class="sc">/</span> total_votes_2021_prez <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span>
+<span id="cb42-81"><a href="#cb42-81" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-82"><a href="#cb42-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-83"><a href="#cb42-83" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-84"><a href="#cb42-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-85"><a href="#cb42-85" aria-hidden="true" tabindex="-1"></a>Now trump too</span>
+<span id="cb42-86"><a href="#cb42-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-89"><a href="#cb42-89" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-90"><a href="#cb42-90" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="ot">&lt;-</span> prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb42-91"><a href="#cb42-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-92"><a href="#cb42-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">biden_pct =</span> janitor<span class="sc">::</span><span class="fu">round_half_up</span>(biden <span class="sc">/</span> total_votes_2021_prez <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>),</span>
+<span id="cb42-93"><a href="#cb42-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">trump_pct =</span> janitor<span class="sc">::</span><span class="fu">round_half_up</span>(trump <span class="sc">/</span> total_votes_2021_prez <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb42-94"><a href="#cb42-94" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-95"><a href="#cb42-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-96"><a href="#cb42-96" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prez_2020)</span>
+<span id="cb42-97"><a href="#cb42-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-98"><a href="#cb42-98" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-99"><a href="#cb42-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-100"><a href="#cb42-100" aria-hidden="true" tabindex="-1"></a><span class="fu"># Getting 2021 Virginia governor results </span></span>
+<span id="cb42-101"><a href="#cb42-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-102"><a href="#cb42-102" aria-hidden="true" tabindex="-1"></a>Data available from the state here: <span class="ot">&lt;https://results.elections.virginia.gov/vaelections/2021%20November%20General/Site/Statewide.html&gt;</span></span>
+<span id="cb42-103"><a href="#cb42-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-104"><a href="#cb42-104" aria-hidden="true" tabindex="-1"></a>In JSON format only</span>
+<span id="cb42-105"><a href="#cb42-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-108"><a href="#cb42-108" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-109"><a href="#cb42-109" aria-hidden="true" tabindex="-1"></a><span class="co">#build the url</span></span>
+<span id="cb42-110"><a href="#cb42-110" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">&quot;https://results.elections.virginia.gov/vaelections/2021%20November%20General/Json/Governor.json&quot;</span></span>
+<span id="cb42-111"><a href="#cb42-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-112"><a href="#cb42-112" aria-hidden="true" tabindex="-1"></a>get_info <span class="ot">&lt;-</span> <span class="fu">GET</span>(url)</span>
+<span id="cb42-113"><a href="#cb42-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-114"><a href="#cb42-114" aria-hidden="true" tabindex="-1"></a>this.raw.content <span class="ot">&lt;-</span> <span class="fu">rawToChar</span>(get_info<span class="sc">$</span>content)</span>
+<span id="cb42-115"><a href="#cb42-115" aria-hidden="true" tabindex="-1"></a>this.content <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(this.raw.content)</span>
+<span id="cb42-116"><a href="#cb42-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-117"><a href="#cb42-117" aria-hidden="true" tabindex="-1"></a><span class="co">#dataframe from just the 6 content </span></span>
+<span id="cb42-118"><a href="#cb42-118" aria-hidden="true" tabindex="-1"></a>content_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(this.content[[<span class="dv">6</span>]])</span>
+<span id="cb42-119"><a href="#cb42-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-120"><a href="#cb42-120" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-121"><a href="#cb42-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-122"><a href="#cb42-122" aria-hidden="true" tabindex="-1"></a>Where are candidates themselves? They are &quot;nested&quot; inside. We&#39;ll use <span class="in">`unnest()`</span>to expand things.</span>
+<span id="cb42-123"><a href="#cb42-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-126"><a href="#cb42-126" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-127"><a href="#cb42-127" aria-hidden="true" tabindex="-1"></a><span class="co">#unnest</span></span>
+<span id="cb42-128"><a href="#cb42-128" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> content_df <span class="sc">%&gt;%</span></span>
+<span id="cb42-129"><a href="#cb42-129" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> Candidates)</span>
+<span id="cb42-130"><a href="#cb42-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-131"><a href="#cb42-131" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span>
+<span id="cb42-132"><a href="#cb42-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-133"><a href="#cb42-133" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-134"><a href="#cb42-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-135"><a href="#cb42-135" aria-hidden="true" tabindex="-1"></a>Unnest again on locality</span>
+<span id="cb42-136"><a href="#cb42-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-139"><a href="#cb42-139" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-140"><a href="#cb42-140" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span></span>
+<span id="cb42-141"><a href="#cb42-141" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> Locality)</span>
+<span id="cb42-142"><a href="#cb42-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-143"><a href="#cb42-143" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span>
+<span id="cb42-144"><a href="#cb42-144" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-145"><a href="#cb42-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-146"><a href="#cb42-146" aria-hidden="true" tabindex="-1"></a>Great.</span>
+<span id="cb42-147"><a href="#cb42-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-148"><a href="#cb42-148" aria-hidden="true" tabindex="-1"></a>We&#39;ll give it a new name to make it easier for us and clean the column names, remove extraneous ones.</span>
+<span id="cb42-149"><a href="#cb42-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-152"><a href="#cb42-152" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-153"><a href="#cb42-153" aria-hidden="true" tabindex="-1"></a>gov_2021 <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span> </span>
+<span id="cb42-154"><a href="#cb42-154" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb42-155"><a href="#cb42-155" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>precincts_reporting,</span>
+<span id="cb42-156"><a href="#cb42-156" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>precincts_participating,</span>
+<span id="cb42-157"><a href="#cb42-157" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>last_modified,</span>
+<span id="cb42-158"><a href="#cb42-158" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>ballot_order)</span>
+<span id="cb42-159"><a href="#cb42-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-160"><a href="#cb42-160" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gov_2021)</span>
+<span id="cb42-161"><a href="#cb42-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-162"><a href="#cb42-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-163"><a href="#cb42-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-164"><a href="#cb42-164" aria-hidden="true" tabindex="-1"></a>What&#39;s the issue we may have here?</span>
+<span id="cb42-165"><a href="#cb42-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-166"><a href="#cb42-166" aria-hidden="true" tabindex="-1"></a>This is actually tidy data which is good - but for comparing the candidates we&#39;d want them on the same row.</span>
+<span id="cb42-167"><a href="#cb42-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-168"><a href="#cb42-168" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reshaping</span></span>
+<span id="cb42-169"><a href="#cb42-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-170"><a href="#cb42-170" aria-hidden="true" tabindex="-1"></a>Enter pivot_wider().</span>
+<span id="cb42-171"><a href="#cb42-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-172"><a href="#cb42-172" aria-hidden="true" tabindex="-1"></a>We&#39;ll get rid of everything we don&#39;t need first.</span>
+<span id="cb42-173"><a href="#cb42-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-176"><a href="#cb42-176" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-177"><a href="#cb42-177" aria-hidden="true" tabindex="-1"></a>gov_2021 <span class="ot">&lt;-</span> gov_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb42-178"><a href="#cb42-178" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ballot_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Glenn A. Youngkin&quot;</span>, <span class="st">&quot;Terry R. McAuliffe&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-179"><a href="#cb42-179" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>locality_code,</span>
+<span id="cb42-180"><a href="#cb42-180" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>political_party)</span>
+<span id="cb42-181"><a href="#cb42-181" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-182"><a href="#cb42-182" aria-hidden="true" tabindex="-1"></a>gov_2021</span>
+<span id="cb42-183"><a href="#cb42-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-184"><a href="#cb42-184" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-185"><a href="#cb42-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-186"><a href="#cb42-186" aria-hidden="true" tabindex="-1"></a>Now we&#39;ll do the spreading out to reshape.</span>
+<span id="cb42-187"><a href="#cb42-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-190"><a href="#cb42-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-191"><a href="#cb42-191" aria-hidden="true" tabindex="-1"></a>gov_2021_wide <span class="ot">&lt;-</span> gov_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb42-192"><a href="#cb42-192" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> ballot_name, <span class="at">values_from =</span> <span class="fu">c</span>(votes, percentage))</span>
+<span id="cb42-193"><a href="#cb42-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-194"><a href="#cb42-194" aria-hidden="true" tabindex="-1"></a>gov_2021_wide</span>
+<span id="cb42-195"><a href="#cb42-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-196"><a href="#cb42-196" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-197"><a href="#cb42-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-198"><a href="#cb42-198" aria-hidden="true" tabindex="-1"></a>Nice.</span>
+<span id="cb42-199"><a href="#cb42-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-200"><a href="#cb42-200" aria-hidden="true" tabindex="-1"></a>This is giving us some pretty long column names. we can change them after the fact using <span class="in">`rename()`</span>. But first let&#39;s clean the names to make it easier.</span>
+<span id="cb42-201"><a href="#cb42-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-204"><a href="#cb42-204" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-205"><a href="#cb42-205" aria-hidden="true" tabindex="-1"></a>gov_2021_wide <span class="ot">&lt;-</span> gov_2021_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb42-206"><a href="#cb42-206" aria-hidden="true" tabindex="-1"></a>  <span class="fu">clean_names</span>()</span>
+<span id="cb42-207"><a href="#cb42-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-208"><a href="#cb42-208" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gov_2021_wide)</span>
+<span id="cb42-209"><a href="#cb42-209" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-210"><a href="#cb42-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-211"><a href="#cb42-211" aria-hidden="true" tabindex="-1"></a>Now let&#39;s rename, and we&#39;ll use similar names to what we had earlier in our 2021 results.</span>
+<span id="cb42-212"><a href="#cb42-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-215"><a href="#cb42-215" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-216"><a href="#cb42-216" aria-hidden="true" tabindex="-1"></a>gov_2021_wide <span class="ot">&lt;-</span> gov_2021_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb42-217"><a href="#cb42-217" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb42-218"><a href="#cb42-218" aria-hidden="true" tabindex="-1"></a>    <span class="at">youngkin =</span> votes_glenn_a_youngkin,</span>
+<span id="cb42-219"><a href="#cb42-219" aria-hidden="true" tabindex="-1"></a>    <span class="at">mcauliffe =</span> votes_terry_r_mc_auliffe,</span>
+<span id="cb42-220"><a href="#cb42-220" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_youngkin =</span> percentage_glenn_a_youngkin,</span>
+<span id="cb42-221"><a href="#cb42-221" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_mcauliffe =</span> percentage_terry_r_mc_auliffe</span>
+<span id="cb42-222"><a href="#cb42-222" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-223"><a href="#cb42-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-224"><a href="#cb42-224" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gov_2021_wide)</span>
+<span id="cb42-225"><a href="#cb42-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-226"><a href="#cb42-226" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-227"><a href="#cb42-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-228"><a href="#cb42-228" aria-hidden="true" tabindex="-1"></a>Bingo.</span>
+<span id="cb42-229"><a href="#cb42-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-230"><a href="#cb42-230" aria-hidden="true" tabindex="-1"></a>There&#39;s still one potential issue here. Can you see it?</span>
+<span id="cb42-231"><a href="#cb42-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-232"><a href="#cb42-232" aria-hidden="true" tabindex="-1"></a>The percentage columns are actually text values, not numbers. And they have that <span class="in">`%`</span> sign in the text too. Let&#39;s fix that using a handy function from the readr package, <span class="in">`parse_number()`</span>.</span>
+<span id="cb42-233"><a href="#cb42-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-236"><a href="#cb42-236" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-237"><a href="#cb42-237" aria-hidden="true" tabindex="-1"></a>gov_2021_wide <span class="ot">&lt;-</span> gov_2021_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb42-238"><a href="#cb42-238" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-239"><a href="#cb42-239" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_youngkin =</span> readr<span class="sc">::</span><span class="fu">parse_number</span>(pct_youngkin),</span>
+<span id="cb42-240"><a href="#cb42-240" aria-hidden="true" tabindex="-1"></a>    <span class="at">pct_mcauliffe =</span> readr<span class="sc">::</span><span class="fu">parse_number</span>(pct_mcauliffe)</span>
+<span id="cb42-241"><a href="#cb42-241" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-242"><a href="#cb42-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-243"><a href="#cb42-243" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gov_2021_wide)</span>
+<span id="cb42-244"><a href="#cb42-244" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-245"><a href="#cb42-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-246"><a href="#cb42-246" aria-hidden="true" tabindex="-1"></a>Perfect. Problem solved.</span>
+<span id="cb42-247"><a href="#cb42-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-248"><a href="#cb42-248" aria-hidden="true" tabindex="-1"></a><span class="fu"># Putting things together - joining </span></span>
+<span id="cb42-249"><a href="#cb42-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-250"><a href="#cb42-250" aria-hidden="true" tabindex="-1"></a>Now we want to actually join things up.</span>
+<span id="cb42-251"><a href="#cb42-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-252"><a href="#cb42-252" aria-hidden="true" tabindex="-1"></a>Can we do that? Let&#39;s check out our two tables</span>
+<span id="cb42-253"><a href="#cb42-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-256"><a href="#cb42-256" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-257"><a href="#cb42-257" aria-hidden="true" tabindex="-1"></a>gov_2021_wide</span>
+<span id="cb42-258"><a href="#cb42-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-259"><a href="#cb42-259" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-260"><a href="#cb42-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-263"><a href="#cb42-263" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-264"><a href="#cb42-264" aria-hidden="true" tabindex="-1"></a>prez_2020</span>
+<span id="cb42-265"><a href="#cb42-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-266"><a href="#cb42-266" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-267"><a href="#cb42-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-268"><a href="#cb42-268" aria-hidden="true" tabindex="-1"></a>Few quick things to deal with... first let&#39;s get rid of the total votes in 2021, we don&#39;t need that anymore. But also the locality isn&#39;t the same case as in our governor&#39;s results, so let&#39;s uppercase it.</span>
+<span id="cb42-269"><a href="#cb42-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-272"><a href="#cb42-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-273"><a href="#cb42-273" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="ot">&lt;-</span> prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb42-274"><a href="#cb42-274" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-275"><a href="#cb42-275" aria-hidden="true" tabindex="-1"></a>    <span class="at">locality =</span> <span class="fu">str_to_upper</span>(locality)</span>
+<span id="cb42-276"><a href="#cb42-276" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-277"><a href="#cb42-277" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>total_votes_2021_prez)</span>
+<span id="cb42-278"><a href="#cb42-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-279"><a href="#cb42-279" aria-hidden="true" tabindex="-1"></a>prez_2020</span>
+<span id="cb42-280"><a href="#cb42-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-281"><a href="#cb42-281" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-282"><a href="#cb42-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-283"><a href="#cb42-283" aria-hidden="true" tabindex="-1"></a>Great. Now we&#39;re all ready to join. Or are we?</span>
+<span id="cb42-284"><a href="#cb42-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-285"><a href="#cb42-285" aria-hidden="true" tabindex="-1"></a>Look closely at the record counts for our two tables. It looks like the presidential results has an extra record perhaps? Let&#39;s investigate.</span>
+<span id="cb42-286"><a href="#cb42-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-287"><a href="#cb42-287" aria-hidden="true" tabindex="-1"></a>We can use <span class="in">`anti_join()`</span> to see what&#39;s in one table but not the other.</span>
+<span id="cb42-288"><a href="#cb42-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-291"><a href="#cb42-291" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-292"><a href="#cb42-292" aria-hidden="true" tabindex="-1"></a><span class="fu">anti_join</span>(prez_2020, gov_2021_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;locality&quot;</span> <span class="ot">=</span> <span class="st">&quot;locality_name&quot;</span>))</span>
+<span id="cb42-293"><a href="#cb42-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-294"><a href="#cb42-294" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-295"><a href="#cb42-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-296"><a href="#cb42-296" aria-hidden="true" tabindex="-1"></a>There&#39;s a total row in there! Well we don&#39;t want that. Let&#39;s take it out.</span>
+<span id="cb42-297"><a href="#cb42-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-298"><a href="#cb42-298" aria-hidden="true" tabindex="-1"></a>Also though notice a second county didn&#39;t match...want to be that might be because it&#39;s differently worded? Let&#39;s see by doing the anti-join in reverse now.</span>
+<span id="cb42-299"><a href="#cb42-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-302"><a href="#cb42-302" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-303"><a href="#cb42-303" aria-hidden="true" tabindex="-1"></a><span class="fu">anti_join</span>(gov_2021_wide, prez_2020, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;locality_name&quot;</span> <span class="ot">=</span> <span class="st">&quot;locality&quot;</span>))</span>
+<span id="cb42-304"><a href="#cb42-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-305"><a href="#cb42-305" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-306"><a href="#cb42-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-307"><a href="#cb42-307" aria-hidden="true" tabindex="-1"></a>Yep that&#39;s it. So let&#39;s fix both of those things in the prez table.</span>
+<span id="cb42-308"><a href="#cb42-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-311"><a href="#cb42-311" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-312"><a href="#cb42-312" aria-hidden="true" tabindex="-1"></a>prez_2020 <span class="ot">&lt;-</span> prez_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb42-313"><a href="#cb42-313" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(locality <span class="sc">!=</span> <span class="st">&quot;TOTALS&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-314"><a href="#cb42-314" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-315"><a href="#cb42-315" aria-hidden="true" tabindex="-1"></a>    <span class="at">locality =</span> <span class="fu">str_replace</span>(locality, <span class="st">&quot;KING AND QUEEN&quot;</span>, <span class="st">&quot;KING &amp; QUEEN&quot;</span>)</span>
+<span id="cb42-316"><a href="#cb42-316" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-317"><a href="#cb42-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-318"><a href="#cb42-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-319"><a href="#cb42-319" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-320"><a href="#cb42-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-321"><a href="#cb42-321" aria-hidden="true" tabindex="-1"></a>Now we&#39;re ready. Let&#39;s join.</span>
+<span id="cb42-322"><a href="#cb42-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-325"><a href="#cb42-325" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-326"><a href="#cb42-326" aria-hidden="true" tabindex="-1"></a>joined_vacomparison <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(prez_2020, gov_2021_wide, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;locality&quot;</span> <span class="ot">=</span> <span class="st">&quot;locality_name&quot;</span>))</span>
+<span id="cb42-327"><a href="#cb42-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-328"><a href="#cb42-328" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(joined_vacomparison)</span>
+<span id="cb42-329"><a href="#cb42-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-330"><a href="#cb42-330" aria-hidden="true" tabindex="-1"></a><span class="co">#save results to file for next step</span></span>
+<span id="cb42-331"><a href="#cb42-331" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(joined_vacomparison, <span class="fu">here</span>(<span class="st">&quot;processed_data&quot;</span>, <span class="st">&quot;joined_vacomparison.rds&quot;</span>))</span>
+<span id="cb42-332"><a href="#cb42-332" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(joined_vacomparison, <span class="fu">here</span>(<span class="st">&quot;processed_data&quot;</span>, <span class="st">&quot;joined_vacomparison.csv&quot;</span>))</span>
+<span id="cb42-333"><a href="#cb42-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-334"><a href="#cb42-334" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb42-335"><a href="#cb42-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-336"><a href="#cb42-336" aria-hidden="true" tabindex="-1"></a>Alright! It worked.</span>
+<span id="cb42-337"><a href="#cb42-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-338"><a href="#cb42-338" aria-hidden="true" tabindex="-1"></a><span class="fu">## Comparing gov vs. prez results</span></span>
+<span id="cb42-339"><a href="#cb42-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-340"><a href="#cb42-340" aria-hidden="true" tabindex="-1"></a>Now that things are join, let&#39;s actually go ahead and start making columns to compare the two elections and how the candidates did this time compared with last time.</span>
+<span id="cb42-341"><a href="#cb42-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-342"><a href="#cb42-342" aria-hidden="true" tabindex="-1"></a>Where should we go from here....?</span>
+<span id="cb42-343"><a href="#cb42-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-346"><a href="#cb42-346" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb42-347"><a href="#cb42-347" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

@@ -1,0 +1,147 @@
+---
+title: "Virginia Election Analysis"
+author: "Zoe Bourne"
+execute:
+  echo: true
+format:
+  html:
+    self-contained: true
+    code-tools: true
+---
+
+Throughout the following page, we will be exploring and analyzing the Virginia election results of Mcauliffe versus Youngkin. We will then be comparing the results of the governors race to the presidential race between Biden and Trump.
+
+We will start by loading our libraries
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+
+
+library(tidyverse)
+library(janitor)
+library(httr)
+library(jsonlite)
+library(kableExtra)
+library(here)
+options(scipen = 999)
+options(stringsAsFactors = FALSE)
+
+
+#load saved joined data file from previous script
+joined_vacomparison <- readRDS(here("processed_data", "joined_vacomparison.rds"))
+
+
+
+```
+
+Using the `mutate()` function, I created three new columns that measure the differences between the four candidates, organized by political party and position.
+
+```{r}
+
+#the 'head' function allows us to see our data table for the datat joined_vacomparison 
+head(joined_vacomparison)
+
+#the following information will be saved as updated_joined_vacomparison, editing joined_vacomparison
+updated_joined_vacomparison <- joined_vacomparison%>%
+mutate(
+      #create new column of the difference between democratic candiated, subracting the presidential canidate from the candiate for governor
+  compare_dem = pct_mcauliffe - biden_pct,
+        #create new column of the difference between republican candiated, subracting the presidential canidate from the candiate for governor
+  compare_rep = pct_youngkin - trump_pct,
+        #create new column of the difference between the two candiated for governor, subracting Youngkin from Mcauliffe
+  compare_gov = pct_mcauliffe - pct_youngkin
+)
+
+```
+
+#### Table One - What Virginia Counties Did Mcauliffe Receive the Largest Percentage of Votes?
+
+```{r}
+#the following information will be saved as dem_table, editing updated_joined_vacomparison
+dem_table <- updated_joined_vacomparison%>%
+  #the data set will be arranged in descending order based on the variable pct_mcauliffe (the percent of votes received by Mcauliffe)
+  arrange(desc(pct_mcauliffe))%>%
+  #head specifies that we want the new data set to include the top five counties where Mcauliffe received the largest percentage of votes
+  head(5)
+
+#the following data for the chart comes from the data set 'dem_table'
+dem_table%>%
+#the variables chosen to be highlighted in this table are the following - locality, pct_mcauliffe, pct_youngkin, trump_pct, biden_pct, compare_dem, compare_rep
+select(locality, pct_mcauliffe, pct_youngkin, trump_pct, biden_pct, compare_dem, compare_rep) %>%
+  #we will create a data table
+  DT::datatable(
+    #rownames false removes the column of row names from the data set
+    rownames = FALSE, 
+    #options allows us to further customize the data table
+                options = list(
+                  #this data table will not include a search bar
+                  searching = FALSE, 
+                  #paging set as false puts all the data on one page
+                  paging = FALSE, 
+                  #the DOM elements include the table (t), table information summary (i), and pagination control (p)
+                  dom = "tip"))
+```
+
+#### Table Two - Percents and Comparisons of Virginia Governor Race and Presidential Race 
+
+```{r}
+#the following data for the chart comes from the data set 'updated_joined_vacomparison'
+updated_joined_vacomparison%>%
+#the variables chosen to be highlighted in this table are the following - locality, compare_gov, compare_dem, compare_rep, pct_youngkin, pct_mcauliffe, trump_pct, biden_pct
+select(locality, compare_gov, compare_dem, compare_rep, pct_youngkin, pct_mcauliffe, trump_pct, biden_pct) %>%
+  #we will create a data table
+  DT::datatable(
+    #rownames false removes the column of row names from the data set
+    rownames = FALSE, 
+               #options allows us to further customize the data table
+                options = list(
+                  #this data table will not include a search bar
+                  searching = FALSE, 
+                  #paging set as fasle puts all the data on one page
+                  paging = FALSE, 
+                  #the DOM elements include the table (t), table information summary (i), and pagination control (p)
+                  dom = "tip"))
+```
+
+#### Chart One - In What Counties Did Youngkin Receive the Highest Percentage of Votes?
+
+```{r}
+#the following information will be saved as sorted_youngkin, editing updated_joined_vacomparison
+sorted_youngkin <- updated_joined_vacomparison%>%
+    #the data set will be arranged in descending order based on the variable pct_youngkin (the percent of votes received by Youngkin)
+  arrange(desc(pct_youngkin))%>%
+    #head specifies that we want the new data set to include the top five counties where Youngkin received the largest percentage of votes
+  head(5)
+
+#plot the data from the data set 'sorted_youngkin'
+ggplot(sorted_youngkin, 
+        #the y axis will display counties, re-organized so the data will be displayed in descending order
+       aes(y = reorder(locality, pct_youngkin), 
+           #the x axis measures the percentage of votes received by Youngkin
+            x = pct_youngkin)) +
+  #geom_col() indicates that the graph will be a bar chart
+  geom_col() +
+    # the title of the graph will be the following - In What Counties Did Youngkin Receive the Highest Percentage of Votes?
+  labs(title = "In What Counties Did Youngkin Receive the Highest Percentage of Votes?")
+```
+
+#### Chart Two - Did Youngkin Perform Better Than Trump?
+
+```{r}
+#the following information will be saved as sorted_rep, editing updated_joined_vacomparison
+sorted_rep <- updated_joined_vacomparison%>%
+  #the data set will be arranged in descending order based on the varaible compare_rep (measuring the difference in votes received between the two republican canidates)
+  arrange(desc(compare_rep))%>%
+  #head specifies that we want the new data set to include the five counties with the largest difference in 'compare_rep'
+  head(5)
+
+#plot the data from the data set 'sorted_rep'
+ggplot(sorted_rep, 
+       #the y axis will display counties, re-organized so the data will be displayed in descending order
+       aes(y = reorder(locality, compare_rep), 
+           #the x axis measures the difference in points between the two candiates
+           x = compare_rep)) +
+  #geom_col() indicates that the graph will be a bar chart
+  geom_col() +
+  # the title of the graph will be the following - Did Youngkin Perform Better Than Trump?
+  labs(title = "Did Youngkin Perform Better Than Trump?")
+```

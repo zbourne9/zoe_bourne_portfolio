@@ -23,8 +23,13 @@ George Washington University
 
 ### Work Experience
 
+Arup - BIM Intern
+
+MZZ Ventures - Project Manger
+
 ### Skill Sets
 
+Software - RStudio, AutoCAD, Revit, Microstation
 
 ```{r}
 
