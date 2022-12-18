@@ -16,7 +16,7 @@ website:
       - href: featured_story.qmd
         text: Featured Story
       - analysis.qmd
-      - href: 02_virigina_election_project_youranalysis.qmd
+      - href: 02_viriginia_election_project_youranalysis.qmd
         text: Virginia Election Analysis
       
   page-footer: 
